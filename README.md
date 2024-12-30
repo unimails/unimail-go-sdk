@@ -47,8 +47,8 @@ func main() {
 - send email
 
 example
-receiver: aaa@gmail.com
-email subject: email subject
+receiver: aaa@gmail.com  
+email subject: email subject  
 email content: this is a email content
 
 ```go
@@ -64,8 +64,8 @@ email content: this is a email content
 - batch send email
 
 example
-receivers: aaa@gmail.com,bbb@gmail.com
-email subject: email subject
+receivers: aaa@gmail.com,bbb@gmail.com  
+email subject: email subject  
 email content: this is a email content
 
 ```go

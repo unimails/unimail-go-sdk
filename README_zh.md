@@ -47,8 +47,8 @@ func main() {
 - 发邮件
 
 例如
-收件人: aaa@gmail.com
-邮件标题: email subject
+收件人: aaa@gmail.com  
+邮件标题: email subject  
 邮件正文: this is a email content
 
 ```go
@@ -64,8 +64,8 @@ func main() {
 - 批量发送邮件
 
 例如
-收件人: aaa@gmail.com,bbb@gmail.com
-邮件标题: email subject
+收件人: aaa@gmail.com,bbb@gmail.com  
+邮件标题: email subject  
 邮件正文: this is a email content
 
 ```go
