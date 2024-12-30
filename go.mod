@@ -1,3 +1,3 @@
 module github.com/i-curve/unimail-go-sdk
 
-go 1.18
+go 1.21
