@@ -44,6 +44,7 @@ func New(key string) UnimailClient {
 	return &unimail{
 		Host:   "https://unimail-back.allcloud.top",
 		Key:    key,
+		lang:   "zh",
 		client: &http.Client{Timeout: timeout},
 	}
 }
@@ -58,6 +59,7 @@ func NewByStruct(key keyStruct) UnimailClient {
 	return &unimail{
 		Host:   "https://unimail-back.allcloud.top",
 		Key:    key.GetKey(),
+		lang:   "zh",
 		client: &http.Client{Timeout: timeout},
 	}
 }
@@ -77,6 +79,7 @@ func NewUnimailClient(client newUnimailClient) UnimailClient {
 	return &unimail{
 		Host:   client.GetHost(),
 		Key:    client.GetKey(),
+		lang:   "zh",
 		client: &http.Client{Timeout: timeout},
 	}
 }
