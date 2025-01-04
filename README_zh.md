@@ -11,7 +11,7 @@ unimail 的 go 语言 sdk, 快速集成到你的项目
 - [unimail-go-sdk](#unimail-go-sdk)
   - [简单使用](#简单使用)
   - [api docs](#api-docs)
-  - [support language## 支持的语言](#support-language-支持的语言)
+  - [支持的语言](#支持的语言)
 
 <!-- /code_chunk_output -->
 
@@ -108,7 +108,7 @@ send email to receiver. if you have many receiver, you can concat the receiver b
 
 like SendEmail, but receivers is a slice
 
-## support language## 支持的语言
+## 支持的语言
 
 sdk 默认返回的 msg 为中文
 
