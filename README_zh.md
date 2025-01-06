@@ -17,6 +17,12 @@ unimail 的 go 语言 sdk, 快速集成到你的项目
 
 ## 简单使用
 
+- 安装
+
+```shell
+go get github.com/i-curve/unimail-go-sdk
+```
+
 - 初始化客户端
 
 你需要申请一个 key

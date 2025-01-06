@@ -17,6 +17,12 @@ This is a Go SDK for Unimail. Quickly integrate into your project
 
 ## simple usage
 
+- install
+
+```shell
+go get github.com/i-curve/unimail-go-sdk
+```
+
 - init a unimail client
 
 you need a authorization key.
