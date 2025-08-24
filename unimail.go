@@ -31,6 +31,12 @@ type UnimailClient interface {
 	// subject 邮件标题
 	// content 邮件内容
 	BatchSendEmail(receivers []string, subject string, content string) Result
+	// todo
+	SendEmailAsync(receiver string, subject string, content string) Result
+	// todo
+	BatchSendEmailAsync(receivers []string, subject string, content string) Result
+	// todo
+	CheckResult(key string) Result
 }
 
 type keyStruct interface {
@@ -166,4 +172,20 @@ func (c *unimail) BatchSendEmail(receivers []string, subject string, content str
 	body, _ := io.ReadAll(resp.Body)
 	json.Unmarshal(body, &result)
 	return
+}
+
+// todo
+func (c *unimail) SendEmailAsync(receiver string, subject string, content string) (result Result) {
+	return c.SendEmail(receiver, subject, content)
+}
+
+// todo
+func (c *unimail) BatchSendEmailAsync(receivers []string, subject string, content string) (result Result) {
+	return c.BatchSendEmail(receivers, subject, content)
+
+}
+
+// todo
+func (c *unimail) CheckResult(key string) (result Result) {
+	return result.HttpError()
 }
