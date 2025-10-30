@@ -48,7 +48,7 @@ type keyStruct interface {
 // key Unimail 获取的已授权 key
 func New(key string) UnimailClient {
 	return &unimail{
-		Host:   "https://unimail-back.allcloud.top",
+		Host:   "https://uniapi.allcloud.top",
 		Key:    key,
 		lang:   "zh",
 		client: &http.Client{Timeout: timeout},
@@ -63,7 +63,7 @@ func NewByStruct(key keyStruct) UnimailClient {
 		panic("unimail key is nil")
 	}
 	return &unimail{
-		Host:   "https://unimail-back.allcloud.top",
+		Host:   "https://uniapi.allcloud.top",
 		Key:    key.GetKey(),
 		lang:   "zh",
 		client: &http.Client{Timeout: timeout},
@@ -106,7 +106,7 @@ func (c *unimail) SetLanguage(lang string) error {
 }
 
 func (c *unimail) CheckConnect() bool {
-	urlPath := "/api/email/checkConnection"
+	urlPath := "/checkConnection"
 	var data = map[string]interface{}{
 		"authorization": c.Key,
 	}
@@ -127,7 +127,7 @@ func (c *unimail) CheckConnect() bool {
 }
 
 func (c *unimail) SendEmail(receiver string, subject string, content string) (result Result) {
-	urlPath := "/api/email/sendEmail"
+	urlPath := "/sendEmail"
 	var data = map[string]interface{}{
 		"authorization": c.Key,
 		"receiver":      receiver,
@@ -150,7 +150,7 @@ func (c *unimail) SendEmail(receiver string, subject string, content string) (re
 }
 
 func (c *unimail) BatchSendEmail(receivers []string, subject string, content string) (result Result) {
-	urlPath := "/api/email/batchSendEmail"
+	urlPath := "/batchSendEmail"
 	var data = map[string]interface{}{
 		"authorization": c.Key,
 		"receivers":     receivers,

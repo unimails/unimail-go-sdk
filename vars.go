@@ -3,6 +3,8 @@ package unimail
 
 import "time"
 
+const UNIMAIL_VERSION = "0.3.0"
+
 var timeout = 60 * time.Second
 
 var supportLang = []string{"en", "zh", "vi", "id", "gu", "th"}
