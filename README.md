@@ -1,5 +1,7 @@
 # unimail-go-sdk
 
+> The current branch SDK version is v1. This branch will no longer receive functional updates. For new users, please refer to the main branch "master".
+
 This is a Go SDK for Unimail. Quickly integrate into your project
 
 [中文文档](README_zh.md)
@@ -20,7 +22,7 @@ This is a Go SDK for Unimail. Quickly integrate into your project
 - install
 
 ```shell
-go get github.com/i-curve/unimail-go-sdk
+go get github.com/i-curve/unimail-go-sdk@v1
 ```
 
 - init a unimail client
