@@ -1,6 +1,8 @@
 # unimail-go-sdk
 
-This is a Go SDK for Unimail. Quickly integrate into your project
+> The current SDK version is v2. If you need to use the previous v1 version, please switch to the v1 branch.
+
+This is a Go SDK for Unimail. Quickly integrate into your project.
 
 [中文文档](README_zh.md)
 
@@ -9,13 +11,13 @@ This is a Go SDK for Unimail. Quickly integrate into your project
 <!-- code_chunk_output -->
 
 - [unimail-go-sdk](#unimail-go-sdk)
-  - [simple usage](#simple-usage)
+  - [usage](#usage)
   - [api docs](#api-docs)
   - [support language](#support-language)
 
 <!-- /code_chunk_output -->
 
-## simple usage
+## usage
 
 - install
 
@@ -52,36 +54,35 @@ func main() {
 
 - send email
 
-example
-receiver: aaa@gmail.com  
-email subject: email subject  
-email content: this is a email content
-
 ```go
-    result := client.SendEmail("aaa@gmail.com", "email subject", "this is a email content")
+    // Gen req
+	req := UnimailReq{
+		// From:        "Notice",
+		Receivers:   []string{"receiver"},
+    	// Cc:          "",
+		// Bcc:         "",
+		Subject:     "test email", //
+		TxtContent:  "common attachment email test", // htmlContext和txtContext二选一即可
+		HtmlContent: "<h1>common attachment email test this is a test <span style=\"font-size: 20px\">email 2</span></h1>",
+	}
+    // add file attachment
+	req.AppendFile("attach1.txt", "./textAttachment.txt")
+	// add uri resources
+    req.AppendUri("attach2.txt", "https://text.com/attach2.txt")
+    // add io.Reader
+	// req.AppendAttachment(&EmailAttachment{
+	// 	Name: "filename.txt",
+	// 	FileAttachment: io.Reader,
+	// })
+
+    // send email
+    result := client.SendEmail(req)
 
     if result.IsSucess() {
         fmt.Println("send email success")
     } else {
         fmt.Printf("send email fail, error: %s\n", result.GetMsg())
     }
-```
-
-- batch send email
-
-example
-receivers: aaa@gmail.com,bbb@gmail.com  
-email subject: email subject  
-email content: this is a email content
-
-```go
-	bresult := client.BatchSendEmail([]string{"aaa@gmail.com", "bbb@gmail.com"}, "email subject", "this is a email content")
-
-	if bresult.IsSucess() {
-		fmt.Println("send email success")
-	} else {
-		fmt.Printf("send email fail, error: %s\n", result.GetMsg())
-	}
 ```
 
 ## api docs
@@ -106,13 +107,9 @@ set language for the client,default is zh
 
 check the host and key is ok
 
-6. client.SendEmail(receiver string, subject string, content string) Result
+6. client.SendEmail(UnimailReq) Result
 
-send email to receiver. if you have many receiver, you can concat the receiver by ";" or use BatchSendEmail
-
-7. client.BatchSendEmail(receivers []string, subject string, content string) Result
-
-like SendEmail, but receivers is a slice
+please see usage
 
 ## support language
 

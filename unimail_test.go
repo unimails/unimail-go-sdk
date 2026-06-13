@@ -16,17 +16,21 @@ func TestCheckConnection(t *testing.T) {
 
 func TestSendEmail(t *testing.T) {
 	c := New(key)
-
-	result := c.SendEmail("i-curve@qq.com", "go test", "this a go client test email")
-	if !result.IsSucess() {
-		t.Errorf("send email error: %+v", result)
+	req := UnimailReq{
+		From:        "Demo",
+		Cc:          "",
+		Bcc:         "",
+		Receivers:   []string{"email1@gmail.com", "email2@gmail.com"},
+		Subject:     "test email",
+		TxtContent:  "common attachment email test",
+		HtmlContent: "<h1>common attachment email test this is a test <span style=\"font-size: 20px\">email 2</span></h1>",
 	}
-}
-
-func TestBatchSendEmail(t *testing.T) {
-	c := New(key)
-
-	result := c.BatchSendEmail([]string{"i-curve@qq.com", "i_curve@qq.com"}, "go test", "this a go client batch test email")
+	req.AppendFile("attach1.txt", "./textAttachment.txt")
+	// req.AppendAttachment(&EmailAttachment{
+	// 	Name:           "filename.txt",
+	// 	FileAttachment: xxx,
+	// })
+	result := c.SendEmail(req)
 	if !result.IsSucess() {
 		t.Errorf("send email error: %+v", result)
 	}

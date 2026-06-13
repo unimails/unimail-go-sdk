@@ -1,5 +1,7 @@
 # unimail-go-sdk
 
+> 当前sdk的版本是v2, 如果你需要用以前的v1版本, 请切换v1分支
+
 unimail 的 go 语言 sdk, 快速集成到你的项目
 
 [english docs](README.md)
@@ -9,13 +11,13 @@ unimail 的 go 语言 sdk, 快速集成到你的项目
 <!-- code_chunk_output -->
 
 - [unimail-go-sdk](#unimail-go-sdk)
-  - [简单使用](#简单使用)
+  - [使用](#使用)
   - [api docs](#api-docs)
   - [支持的语言](#支持的语言)
 
 <!-- /code_chunk_output -->
 
-## 简单使用
+## 使用
 
 - 安装
 
@@ -52,36 +54,35 @@ func main() {
 
 - 发邮件
 
-例如
-收件人: aaa@gmail.com  
-邮件标题: email subject  
-邮件正文: this is a email content
-
 ```go
-    result := client.SendEmail("aaa@gmail.com", "email subject", "this is a email content")
+    // 构造请求体
+	req := UnimailReq{
+		// From:        "通知",
+		Receivers:   []string{"收件人,数组, 可以多个收件人"},
+    	// Cc:          "",
+		// Bcc:         "",
+		Subject:     "test email", // 主题
+		TxtContent:  "common attachment email test", // htmlContext和txtContext二选一即可
+		HtmlContent: "<h1>common attachment email test this is a test <span style=\"font-size: 20px\">email 2</span></h1>",
+	}
+    // 添加文件附件
+	req.AppendFile("attach1.txt", "./textAttachment.txt")
+	// 添加http资源文件
+    req.AppendUri("attach2.txt", "https://text.com/attach2.txt")
+    // 添加 io.Reader 资源文件
+	// req.AppendAttachment(&EmailAttachment{
+	// 	Name: "filename.txt",
+	// 	FileAttachment: io.Reader,
+	// })
+
+    // 发送邮件
+    result := client.SendEmail(req)
 
     if result.IsSucess() {
         fmt.Println("send email success")
     } else {
         fmt.Printf("send email fail, error: %s\n", result.GetMsg())
     }
-```
-
-- 批量发送邮件
-
-例如
-收件人: aaa@gmail.com,bbb@gmail.com  
-邮件标题: email subject  
-邮件正文: this is a email content
-
-```go
-	bresult := client.BatchSendEmail([]string{"aaa@gmail.com", "bbb@gmail.com"}, "email subject", "this is a email content")
-
-	if bresult.IsSucess() {
-		fmt.Println("send email success")
-	} else {
-		fmt.Printf("send email fail, error: %s\n", result.GetMsg())
-	}
 ```
 
 ## api docs
@@ -106,13 +107,9 @@ set language for the client,default is zh
 
 check the host and key is ok
 
-6. client.SendEmail(receiver string, subject string, content string) Result
+6. client.SendEmail(UnimailReq) Result
 
-send email to receiver. if you have many receiver, you can concat the receiver by ";" or use BatchSendEmail
-
-7. client.BatchSendEmail(receivers []string, subject string, content string) Result
-
-like SendEmail, but receivers is a slice
+please see usage
 
 ## 支持的语言
 

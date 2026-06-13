@@ -6,8 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"slices"
+	"strings"
 )
 
 // UnimailClient unimail client to operate unimail
@@ -20,23 +22,8 @@ type UnimailClient interface {
 
 	// SendEmail 发送邮件
 	//
-	// receiver 接收人, 多个人使用;进行分割
-	// subject 邮件标题
-	// content 邮件内容
-	SendEmail(receiver string, subject string, content string) Result
-
-	// BatchSendEmail 批量发送邮件
-	//
-	// receivers 接收人, 多个人使用
-	// subject 邮件标题
-	// content 邮件内容
-	BatchSendEmail(receivers []string, subject string, content string) Result
-	// todo
-	SendEmailAsync(receiver string, subject string, content string) Result
-	// todo
-	BatchSendEmailAsync(receivers []string, subject string, content string) Result
-	// todo
-	CheckResult(key string) Result
+	// req UnimailReq 发送邮件请求体
+	SendEmail(req UnimailReq) Result
 }
 
 type keyStruct interface {
@@ -48,7 +35,7 @@ type keyStruct interface {
 // key Unimail 获取的已授权 key
 func New(key string) UnimailClient {
 	return &unimail{
-		Host:   "https://uniapi.allcloud.top",
+		Host:   DOMAIN,
 		Key:    key,
 		lang:   "zh",
 		client: &http.Client{Timeout: timeout},
@@ -63,7 +50,7 @@ func NewByStruct(key keyStruct) UnimailClient {
 		panic("unimail key is nil")
 	}
 	return &unimail{
-		Host:   "https://uniapi.allcloud.top",
+		Host:   DOMAIN,
 		Key:    key.GetKey(),
 		lang:   "zh",
 		client: &http.Client{Timeout: timeout},
@@ -106,7 +93,7 @@ func (c *unimail) SetLanguage(lang string) error {
 }
 
 func (c *unimail) CheckConnect() bool {
-	urlPath := "/checkConnection"
+	urlPath := "/v2/checkConnection"
 	var data = map[string]interface{}{
 		"authorization": c.Key,
 	}
@@ -126,66 +113,55 @@ func (c *unimail) CheckConnect() bool {
 	return result.IsSucess()
 }
 
-func (c *unimail) SendEmail(receiver string, subject string, content string) (result Result) {
-	urlPath := "/sendEmail"
-	var data = map[string]interface{}{
-		"authorization": c.Key,
-		"receiver":      receiver,
-		"title":         subject,
-		"content":       content,
+func (c *unimail) SendEmail(req UnimailReq) (result Result) {
+	urlPath := "/v2/sendEmail"
+
+	if len(req.Receivers) == 0 {
+		return Result{Code: 400, Msg: "receivers is required"}
 	}
-	bdata, _ := json.Marshal(data)
 
-	req, _ := http.NewRequest("POST", c.Host+urlPath, bytes.NewBuffer(bdata))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept-Language", c.lang)
+	if req.Subject == "" {
+		return Result{Code: 400, Msg: "subject is required"}
+	}
 
-	resp, err := c.client.Do(req)
-	if err != nil { // 请求出错
+	bodyBuffer := &bytes.Buffer{}
+	bodyWriter := multipart.NewWriter(bodyBuffer)
+	bodyWriter.WriteField("authorization", c.Key)
+	bodyWriter.WriteField("receiver", strings.Join(req.Receivers, ";"))
+	bodyWriter.WriteField("from", req.From)
+	if req.Cc != "" {
+		bodyWriter.WriteField("cc", req.Cc)
+	}
+	if req.Bcc != "" {
+		bodyWriter.WriteField("bcc", req.Bcc)
+	}
+	bodyWriter.WriteField("subject", req.Subject)
+	if req.TxtContent != "" {
+		bodyWriter.WriteField("txtContent", req.TxtContent)
+	}
+	if req.HtmlContent != "" {
+		bodyWriter.WriteField("htmlContent", req.HtmlContent)
+	}
+	for id, attachment := range req.Attachments {
+		bodyWriter.WriteField(fmt.Sprintf("attachments[%d].name", id), attachment.Name)
+		if attachment.FileAttachment != nil {
+			part, _ := bodyWriter.CreateFormFile(fmt.Sprintf("attachments[%d].fileAttachment", id), attachment.Name)
+			io.Copy(part, attachment.FileAttachment)
+		} else if attachment.UrlAttachment != "" {
+			bodyWriter.WriteField(fmt.Sprintf("attachments[%d].urlAttachment", id), attachment.UrlAttachment)
+		}
+	}
+	bodyWriter.Close()
+
+	httpReq, _ := http.NewRequest("POST", c.Host+urlPath, bodyBuffer)
+	httpReq.Header.Set("Content-Type", bodyWriter.FormDataContentType())
+	httpReq.Header.Set("Accept-Language", c.lang)
+	resp, err := c.client.Do(httpReq)
+	if err != nil {
 		return result.HttpError()
 	}
-	body, _ := io.ReadAll(resp.Body)
-	json.Unmarshal(body, &result)
-	return
-}
-
-func (c *unimail) BatchSendEmail(receivers []string, subject string, content string) (result Result) {
-	urlPath := "/batchSendEmail"
-	var data = map[string]interface{}{
-		"authorization": c.Key,
-		"receivers":     receivers,
-		"title":         subject,
-		"content":       content,
-	}
-	bdata, _ := json.Marshal(data)
-
-	req, _ := http.NewRequest("POST", c.Host+urlPath, bytes.NewBuffer(bdata))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept-Language", c.lang)
-
-	resp, err := c.client.Do(req)
-	if err != nil { // 请求出错
-		return result.HttpError()
-	}
-
 	defer resp.Body.Close()
 	body, _ := io.ReadAll(resp.Body)
 	json.Unmarshal(body, &result)
 	return
-}
-
-// todo
-func (c *unimail) SendEmailAsync(receiver string, subject string, content string) (result Result) {
-	return c.SendEmail(receiver, subject, content)
-}
-
-// todo
-func (c *unimail) BatchSendEmailAsync(receivers []string, subject string, content string) (result Result) {
-	return c.BatchSendEmail(receivers, subject, content)
-
-}
-
-// todo
-func (c *unimail) CheckResult(key string) (result Result) {
-	return result.HttpError()
 }
