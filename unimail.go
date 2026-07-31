@@ -128,7 +128,12 @@ func (c *unimail) SendEmail(req UnimailReq) (result Result) {
 	bodyWriter := multipart.NewWriter(bodyBuffer)
 	bodyWriter.WriteField("authorization", c.Key)
 	bodyWriter.WriteField("receiver", strings.Join(req.Receivers, ";"))
-	bodyWriter.WriteField("from", req.From)
+	if req.From != "" {
+		bodyWriter.WriteField("from", req.From)
+	}
+	if req.Route != "" {
+		bodyWriter.WriteField("route", req.Route)
+	}
 	if req.Cc != "" {
 		bodyWriter.WriteField("cc", req.Cc)
 	}

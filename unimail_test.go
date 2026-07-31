@@ -6,6 +6,20 @@ import (
 
 var key = ""
 
+func TestRouteSend(t *testing.T) {
+	c := New(key)
+	req := UnimailReq{
+		Route:      "route1",
+		Receivers:  []string{"i-curve@qq.com", "i_curve@qq.com"},
+		Subject:    "test email",
+		TxtContent: "common attachment email test is to test route function",
+	}
+	result := c.SendEmail(req)
+	if !result.IsSucess() {
+		t.Errorf("send email error: %+v", result)
+	}
+}
+
 func TestCheckConnection(t *testing.T) {
 	c := New(key)
 

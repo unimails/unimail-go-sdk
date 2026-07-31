@@ -9,9 +9,9 @@ import (
 	"time"
 )
 
-const UNIMAIL_VERSION = "1.0.0"
+const UNIMAIL_VERSION = "1.1.0"
 
-const DOMAIN = "https://uniapi.allcloud.top"
+const DOMAIN = "https://uniapi.allcloud.top/unimail"
 
 // DEBUG
 // const DOMAIN = "http://127.0.0.1:8080/api/email"
@@ -22,6 +22,7 @@ var supportLang = []string{"en", "zh", "vi", "id", "gu", "th"}
 
 // UnimailReq 发送邮件请求体
 type UnimailReq struct {
+	Route       string            `json:"route,omitempty"`       // 路由(可空)
 	From        string            `json:"from,omitempty"`        // 昵称(可空)
 	Receivers   []string          `json:"receivers,omitempty"`   // 收件人(必填)
 	Cc          string            `json:"cc,omitempty"`          // 抄送(可空)
